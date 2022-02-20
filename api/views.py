@@ -1,6 +1,11 @@
-from django.http import JsonResponse
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from .serializers import UserSerializer
+from .models import User
 
-def get_Routes(request):
+
+@api_view(['GET'])
+def get_routes(request):
     routes = [
         {
             'Endpoint': '/users',
@@ -10,4 +15,11 @@ def get_Routes(request):
         },
     ]
 
-    return JsonResponse()
+    return Response(routes)
+
+
+@api_view(['GET'])
+def get_user(request):
+    users = User.objects.all()
+    serializer = UserSerializer(users, many=True)
+    return Response(serializer.data)
