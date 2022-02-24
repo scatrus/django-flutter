@@ -16,7 +16,7 @@ class Teacher(User):
     level = models.CharField(max_length=100)
 
     def __str__(self):
-        return super(Teacher, self).name
+        return self.name
 
 
 class Student(User):
@@ -24,7 +24,7 @@ class Student(User):
     level = models.CharField(max_length=100, default=None)
 
     def __str__(self):
-        return super(Student, self).name
+        return self.name
 
 
 class Academy(models.Model):
@@ -62,3 +62,9 @@ class Group(models.Model):
 
     def __str__(self):
         return 'Grupo X'
+
+
+class Presence(models.Model):
+    ...
+# tabela pivô - criar campo de presença com vários tipos: presente, falta, falta justificada, etc.
+# ver documentação
