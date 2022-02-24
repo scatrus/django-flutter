@@ -1,4 +1,10 @@
 from django.contrib import admin
 
-from .models import User
-admin.site.register(User)
+from .models import Student, Teacher, Academy, Place, Classroom, Group
+admin.site.register(Student)
+admin.site.register(Teacher)
+admin.site.register(Academy)
+admin.site.register(Place)
+admin.site.register(Classroom)
+admin.site.register(Group)
+
