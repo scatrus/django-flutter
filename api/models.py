@@ -1,5 +1,7 @@
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 
 class User(models.Model):
@@ -63,7 +65,7 @@ class Group(models.Model):
                                   verbose_name='Turma/Grupo/Alunos')
 
     def __str__(self):
-        return self.members.all().values_list('name')
+        return str(self.members.all().values_list('name'))
 
 
 class Presence(models.Model):
@@ -80,3 +82,10 @@ class Presence(models.Model):
 
     def __str__(self):
         return f'{self.student.name} - {self.get_presence_display()} - {self.group.classroom.date}'
+
+
+@receiver(post_save, sender=Presence)
+def update_presence(sender, instance, **kwargs):
+    if instance.presence == 1:  # sum only if presence code is 1
+        instance.student.presence_amount += instance.presence
+        instance.student.save()
