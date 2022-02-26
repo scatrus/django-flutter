@@ -63,7 +63,7 @@ class Group(models.Model):
                                   verbose_name='Turma/Grupo/Alunos')
 
     def __str__(self):
-        return 'Grupo X'
+        return self.members.all().values_list('name')
 
 
 class Presence(models.Model):

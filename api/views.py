@@ -1,7 +1,7 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .serializers import StudentSerializer, GroupSerializer, ClassroomSerializer
-from .models import Student, Group
+from .models import Student, Group, Classroom
 
 
 @api_view(['GET'])
@@ -14,13 +14,13 @@ def get_routes(request):
             'description': 'Returns an array of students'
         },
         {
-            'Endpoint': '/classroom',
+            'Endpoint': '/classrooms',
             'method': 'GET',
             'body': None,
             'description': 'Returns an array of classrooms'
         },
         {
-            'Endpoint': '/group',
+            'Endpoint': '/groups',
             'method': 'GET',
             'body': None,
             'description': 'Returns an array of groups'
@@ -39,7 +39,7 @@ def get_student(request):
 
 @api_view(['GET'])
 def get_classroom(request):
-    classrooms = Student.objects.all()
+    classrooms = Classroom.objects.all()
     serializer = ClassroomSerializer(classrooms, many=True)
     return Response(serializer.data)
 
