@@ -1,8 +1,20 @@
 from rest_framework.serializers import ModelSerializer
-from .models import User
+from .models import Student, Group, Classroom
 
 
-class UserSerializer(ModelSerializer):
+class StudentSerializer(ModelSerializer):
     class Meta:
-        model = User
+        model = Student
+        fields = '__all__'
+
+
+class ClassroomSerializer(ModelSerializer):
+    class Meta:
+        model = Classroom
+        fields = '__all__'
+
+
+class GroupSerializer(ModelSerializer):
+    class Meta:
+        model = Group
         fields = '__all__'

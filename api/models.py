@@ -20,7 +20,7 @@ class Teacher(User):
 
 
 class Student(User):
-    presence_amount = models.PositiveSmallIntegerField(default=None)
+    presence_amount = models.PositiveSmallIntegerField(default=0)
     level = models.CharField(max_length=100, default=None)
 
     def __str__(self):
@@ -37,8 +37,8 @@ class Academy(models.Model):
 class Place(models.Model):
     place_name = models.CharField(max_length=100, default=None)
     tatame_amount = models.PositiveSmallIntegerField(default=None)
-    id_academy = models.ForeignKey(Academy, on_delete=models.CASCADE, related_name='place_academy',
-                                   verbose_name='Sala/Local/Espaço', default=None)
+    academy = models.ForeignKey(Academy, on_delete=models.CASCADE, related_name='place_academy',
+                                verbose_name='Academia', default=None)
 
     def __str__(self):
         return self.place_name
@@ -46,25 +46,37 @@ class Place(models.Model):
 
 class Classroom(models.Model):
     date = models.DateTimeField()
-    id_place = models.ForeignKey(Place, on_delete=models.CASCADE, related_name='classroom_place',
-                                 verbose_name='Sala/Local/Espaço')
-    id_teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE, related_name='classroom_teacher',
-                                   verbose_name='Professor')
+    place = models.ForeignKey(Place, on_delete=models.CASCADE, related_name='classroom_place',
+                              verbose_name='Sala/Local/Espaço')
+    teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE, related_name='classroom_teacher',
+                                verbose_name='Professor')
 
     def __str__(self):
         return str(self.date)
 
 
 class Group(models.Model):
-    id_student = models.ManyToManyField(Student, related_name='group_student')
-    id_classroom = models.ForeignKey(Classroom, on_delete=models.CASCADE, related_name='group_classroom',
-                                     verbose_name='Turma/Grupo/Alunos')
+    members = models.ManyToManyField(Student, related_name='group_student')
+    # through='Presence',
+    # through_fields=('group', 'student'), )
+    classroom = models.ForeignKey(Classroom, on_delete=models.CASCADE, related_name='group_classroom',
+                                  verbose_name='Turma/Grupo/Alunos')
 
     def __str__(self):
         return 'Grupo X'
 
 
 class Presence(models.Model):
-    ...
-# tabela pivô - criar campo de presença com vários tipos: presente, falta, falta justificada, etc.
-# ver documentação
+    PRESENCE_CHOICES = (
+        (1, 'PRESENCE'),
+        (0, 'ABSENCE'),
+        (2, 'EXCUSED ABSENCE'),
+        (3, 'UNEXCUSED ABSENCE'),
+    )
+
+    group = models.ForeignKey(Group, on_delete=models.CASCADE)
+    student = models.ForeignKey(Student, on_delete=models.CASCADE)
+    presence = models.PositiveSmallIntegerField(choices=PRESENCE_CHOICES)
+
+    def __str__(self):
+        return f'{self.student.name} - {self.get_presence_display()} - {self.group.classroom.date}'
