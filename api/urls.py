@@ -6,6 +6,8 @@ urlpatterns = [
     path('places', views.get_place),
     path('academys', views.get_academys),
     path('academys/<str:pk>', views.get_academy),
+    path('academys/<str:pk>/update', views.update_academy),
+    path('academys/<str:pk>/delete', views.delete_academy),
     path('academys/create/', views.create_academy),
     path('students', views.get_student),
     path('teachers', views.get_teacher),

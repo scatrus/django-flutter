@@ -33,6 +33,18 @@ def get_routes(request):
             'description': 'Creates a new academy'
         },
         {
+            'Endpoint': '/academys/id/update/',
+            'method': 'PUT',
+            'body': {'name': ""},
+            'description': 'Updates an exists academy'
+        },
+        {
+            'Endpoint': '/academys/id/delete/',
+            'method': 'DELETE',
+            'body': None,
+            'description': 'Delete an exists academy'
+        },
+        {
             'Endpoint': '/students',
             'method': 'GET',
             'body': None,
@@ -104,6 +116,25 @@ def create_academy(request):
     )
     serializer = AcademySerializer(academy, many=False)
     return Response(serializer.data)
+
+
+@api_view(['PUT'])
+def update_academy(request, pk):
+    data = request.data
+    academy = Academy.objects.get(id=pk)
+    serializer = AcademySerializer(academy, data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+    return Response(serializer.data)
+
+
+@api_view(['DELETE'])
+def delete_academy(request, pk):
+    data = request.data
+    academy = Academy.objects.get(id=pk)
+    name = academy.name
+    academy.delete()
+    return Response(f'Academy {name} was deleted!')
 
 
 @api_view(['GET'])
