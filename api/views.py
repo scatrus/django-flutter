@@ -21,6 +21,18 @@ def get_routes(request):
             'description': 'Returns an array of academys'
         },
         {
+            'Endpoint': '/academys/id',
+            'method': 'GET',
+            'body': None,
+            'description': 'Returns a single academy object'
+        },
+        {
+            'Endpoint': '/academys/create/',
+            'method': 'POST',
+            'body': {'name': ""},
+            'description': 'Creates a new academy'
+        },
+        {
             'Endpoint': '/students',
             'method': 'GET',
             'body': None,
@@ -71,9 +83,26 @@ def get_place(request):
 
 
 @api_view(['GET'])
-def get_academy(request):
+def get_academys(request):
     academys = Academy.objects.all()
     serializer = AcademySerializer(academys, many=True)
+    return Response(serializer.data)
+
+
+@api_view(['GET'])
+def get_academy(request, pk):
+    academy = Academy.objects.get(id=pk)
+    serializer = AcademySerializer(academy, many=False)
+    return Response(serializer.data)
+
+
+@api_view(['POST'])
+def create_academy(request):
+    data = request.data
+    academy = Academy.objects.create(
+        name=data['name']
+    )
+    serializer = AcademySerializer(academy, many=False)
     return Response(serializer.data)
 
 
