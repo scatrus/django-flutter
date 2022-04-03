@@ -1,165 +1,270 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from .serializers import StudentSerializer, GroupSerializer, ClassroomSerializer, TeacherSerializer, AcademySerializer, \
-    PlaceSerializer, PresenceSerializer
-from .models import Student, Group, Classroom, Teacher, Academy, Place, Presence
+from api.models import Teacher, Student, Academy, Place, Classroom, Group, Presence
+from api.serializers import TeacherSerializer, StudentSerializer, AcademySerializer, PlaceSerializer, ClassroomSerializer, GroupSerializer, PresenceSerializer
 
 
-@api_view(['GET'])
-def get_routes(request):
-    routes = [
-        {
-            'Endpoint': '/places',
-            'method': 'GET',
-            'body': None,
-            'description': 'Returns an array of places'
-        },
-        {
-            'Endpoint': '/academys',
-            'method': 'GET',
-            'body': None,
-            'description': 'Returns an array of academys'
-        },
-        {
-            'Endpoint': '/academys/id',
-            'method': 'GET',
-            'body': None,
-            'description': 'Returns a single academy object'
-        },
-        {
-            'Endpoint': '/academys/create/',
-            'method': 'POST',
-            'body': {'name': ""},
-            'description': 'Creates a new academy'
-        },
-        {
-            'Endpoint': '/academys/id/update/',
-            'method': 'PUT',
-            'body': {'name': ""},
-            'description': 'Updates an exists academy'
-        },
-        {
-            'Endpoint': '/academys/id/delete/',
-            'method': 'DELETE',
-            'body': None,
-            'description': 'Delete an exists academy'
-        },
-        {
-            'Endpoint': '/students',
-            'method': 'GET',
-            'body': None,
-            'description': 'Returns an array of students'
-        },
-        {
-            'Endpoint': '/teachers',
-            'method': 'GET',
-            'body': None,
-            'description': 'Returns an array of teachers'
-        },
-        {
-            'Endpoint': '/classrooms',
-            'method': 'GET',
-            'body': None,
-            'description': 'Returns an array of classrooms'
-        },
+@api_view(['GET', 'POST'])
+def teacher_list(request):
+    if request.method == 'GET':
+        items = Teacher.objects.order_by('pk')
+        serializer = TeacherSerializer(items, many=True)
+        return Response(serializer.data)
 
-        {
-            'Endpoint': '/presences',
-            'method': 'GET',
-            'body': None,
-            'description': 'Returns an array of presences'
-        },
-        {
-            'Endpoint': '/groups',
-            'method': 'GET',
-            'body': None,
-            'description': 'Returns an array of groups'
-        },
-    ]
-
-    return Response(routes)
+    elif request.method == 'POST':
+        serializer = TeacherSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=201)
+        return Response(serializer.errors, status=400)
 
 
-@api_view(['GET'])
-def get_presence(request):
-    presences = Presence.objects.all()
-    serializer = PresenceSerializer(presences, many=True)
-    return Response(serializer.data)
+@api_view(['GET', 'PUT', 'DELETE'])
+def teacher_detail(request, pk):
+    try:
+        item = Teacher.objects.get(pk=pk)
+    except Teacher.DoesNotExist:
+        return Response(status=404)
+
+    if request.method == 'GET':
+        serializer = TeacherSerializer(item)
+        return Response(serializer.data)
+
+    elif request.method == 'PUT':
+        serializer = TeacherSerializer(item, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=400)
+
+    elif request.method == 'DELETE':
+        item.delete()
+        return Response(status=204)
 
 
-@api_view(['GET'])
-def get_place(request):
-    places = Place.objects.all()
-    serializer = PlaceSerializer(places, many=True)
-    return Response(serializer.data)
+@api_view(['GET', 'POST'])
+def student_list(request):
+    if request.method == 'GET':
+        items = Student.objects.order_by('pk')
+        serializer = StudentSerializer(items, many=True)
+        return Response(serializer.data)
+
+    elif request.method == 'POST':
+        serializer = StudentSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=201)
+        return Response(serializer.errors, status=400)
 
 
-@api_view(['GET'])
-def get_academys(request):
-    academys = Academy.objects.all()
-    serializer = AcademySerializer(academys, many=True)
-    return Response(serializer.data)
+@api_view(['GET', 'PUT', 'DELETE'])
+def student_detail(request, pk):
+    try:
+        item = Student.objects.get(pk=pk)
+    except Student.DoesNotExist:
+        return Response(status=404)
+
+    if request.method == 'GET':
+        serializer = StudentSerializer(item)
+        return Response(serializer.data)
+
+    elif request.method == 'PUT':
+        serializer = StudentSerializer(item, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=400)
+
+    elif request.method == 'DELETE':
+        item.delete()
+        return Response(status=204)
 
 
-@api_view(['GET'])
-def get_academy(request, pk):
-    academy = Academy.objects.get(id=pk)
-    serializer = AcademySerializer(academy, many=False)
-    return Response(serializer.data)
+@api_view(['GET', 'POST'])
+def academy_list(request):
+    if request.method == 'GET':
+        items = Academy.objects.order_by('pk')
+        serializer = AcademySerializer(items, many=True)
+        return Response(serializer.data)
+
+    elif request.method == 'POST':
+        serializer = AcademySerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=201)
+        return Response(serializer.errors, status=400)
 
 
-@api_view(['POST'])
-def create_academy(request):
-    data = request.data
-    academy = Academy.objects.create(
-        name=data['name']
-    )
-    serializer = AcademySerializer(academy, many=False)
-    return Response(serializer.data)
+@api_view(['GET', 'PUT', 'DELETE'])
+def academy_detail(request, pk):
+    try:
+        item = Academy.objects.get(pk=pk)
+    except Academy.DoesNotExist:
+        return Response(status=404)
+
+    if request.method == 'GET':
+        serializer = AcademySerializer(item)
+        return Response(serializer.data)
+
+    elif request.method == 'PUT':
+        serializer = AcademySerializer(item, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=400)
+
+    elif request.method == 'DELETE':
+        item.delete()
+        return Response(status=204)
 
 
-@api_view(['PUT'])
-def update_academy(request, pk):
-    data = request.data
-    academy = Academy.objects.get(id=pk)
-    serializer = AcademySerializer(academy, data=request.data)
-    if serializer.is_valid():
-        serializer.save()
-    return Response(serializer.data)
+@api_view(['GET', 'POST'])
+def place_list(request):
+    if request.method == 'GET':
+        items = Place.objects.order_by('pk')
+        serializer = PlaceSerializer(items, many=True)
+        return Response(serializer.data)
+
+    elif request.method == 'POST':
+        serializer = PlaceSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=201)
+        return Response(serializer.errors, status=400)
 
 
-@api_view(['DELETE'])
-def delete_academy(request, pk):
-    data = request.data
-    academy = Academy.objects.get(id=pk)
-    name = academy.name
-    academy.delete()
-    return Response(f'Academy {name} was deleted!')
+@api_view(['GET', 'PUT', 'DELETE'])
+def place_detail(request, pk):
+    try:
+        item = Place.objects.get(pk=pk)
+    except Place.DoesNotExist:
+        return Response(status=404)
+
+    if request.method == 'GET':
+        serializer = PlaceSerializer(item)
+        return Response(serializer.data)
+
+    elif request.method == 'PUT':
+        serializer = PlaceSerializer(item, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=400)
+
+    elif request.method == 'DELETE':
+        item.delete()
+        return Response(status=204)
 
 
-@api_view(['GET'])
-def get_student(request):
-    students = Student.objects.all()
-    serializer = StudentSerializer(students, many=True)
-    return Response(serializer.data)
+@api_view(['GET', 'POST'])
+def classroom_list(request):
+    if request.method == 'GET':
+        items = Classroom.objects.order_by('pk')
+        serializer = ClassroomSerializer(items, many=True)
+        return Response(serializer.data)
+
+    elif request.method == 'POST':
+        serializer = ClassroomSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=201)
+        return Response(serializer.errors, status=400)
 
 
-@api_view(['GET'])
-def get_teacher(request):
-    students = Teacher.objects.all()
-    serializer = TeacherSerializer(students, many=True)
-    return Response(serializer.data)
+@api_view(['GET', 'PUT', 'DELETE'])
+def classroom_detail(request, pk):
+    try:
+        item = Classroom.objects.get(pk=pk)
+    except Classroom.DoesNotExist:
+        return Response(status=404)
+
+    if request.method == 'GET':
+        serializer = ClassroomSerializer(item)
+        return Response(serializer.data)
+
+    elif request.method == 'PUT':
+        serializer = ClassroomSerializer(item, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=400)
+
+    elif request.method == 'DELETE':
+        item.delete()
+        return Response(status=204)
 
 
-@api_view(['GET'])
-def get_classroom(request):
-    classrooms = Classroom.objects.all()
-    serializer = ClassroomSerializer(classrooms, many=True)
-    return Response(serializer.data)
+@api_view(['GET', 'POST'])
+def group_list(request):
+    if request.method == 'GET':
+        items = Group.objects.order_by('pk')
+        serializer = GroupSerializer(items, many=True)
+        return Response(serializer.data)
+
+    elif request.method == 'POST':
+        serializer = GroupSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=201)
+        return Response(serializer.errors, status=400)
 
 
-@api_view(['GET'])
-def get_group(request):
-    groups = Group.objects.all()
-    serializer = GroupSerializer(groups, many=True)
-    return Response(serializer.data)
+@api_view(['GET', 'PUT', 'DELETE'])
+def group_detail(request, pk):
+    try:
+        item = Group.objects.get(pk=pk)
+    except Group.DoesNotExist:
+        return Response(status=404)
+
+    if request.method == 'GET':
+        serializer = GroupSerializer(item)
+        return Response(serializer.data)
+
+    elif request.method == 'PUT':
+        serializer = GroupSerializer(item, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=400)
+
+    elif request.method == 'DELETE':
+        item.delete()
+        return Response(status=204)
+
+
+@api_view(['GET', 'POST'])
+def presence_list(request):
+    if request.method == 'GET':
+        items = Presence.objects.order_by('pk')
+        serializer = PresenceSerializer(items, many=True)
+        return Response(serializer.data)
+
+    elif request.method == 'POST':
+        serializer = PresenceSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=201)
+        return Response(serializer.errors, status=400)
+
+
+@api_view(['GET', 'PUT', 'DELETE'])
+def presence_detail(request, pk):
+    try:
+        item = Presence.objects.get(pk=pk)
+    except Presence.DoesNotExist:
+        return Response(status=404)
+
+    if request.method == 'GET':
+        serializer = PresenceSerializer(item)
+        return Response(serializer.data)
+
+    elif request.method == 'PUT':
+        serializer = PresenceSerializer(item, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=400)
+
+    elif request.method == 'DELETE':
+        item.delete()
+        return Response(status=204)
