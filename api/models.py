@@ -1,32 +1,46 @@
+from django.contrib.auth.base_user import AbstractBaseUser
+from django.contrib.auth.models import AbstractUser, User as BaseUser, PermissionsMixin
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.utils.translation import ugettext_lazy as _
+
+from api.managers import CustomUserManager
+
+from django.contrib.auth.models import AbstractUser
+from django.db import models
+from django.utils.translation import ugettext_lazy as _
+
+from .managers import CustomUserManager
 
 
-class User(models.Model):
-    class Meta:
-        abstract = True
+class CustomUser(AbstractUser):
+    username = None
+    email = models.EmailField(_('email address'), unique=True)
 
-    code = models.PositiveSmallIntegerField(default=None)
-    name = models.CharField(max_length=255, default=None)
-    updated = models.DateTimeField(auto_now=True)
-    created = models.DateTimeField(auto_now_add=True)
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = []
 
-
-class Teacher(User):
-    level = models.CharField(max_length=100)
+    objects = CustomUserManager()
 
     def __str__(self):
-        return self.name
+        return self.email
 
 
-class Student(User):
+class Teacher(CustomUser):
+    level = models.CharField(max_length=100)
+
+    class Meta:
+        verbose_name: 'Teacher'
+
+
+class Student(CustomUser):
     presence_amount = models.PositiveSmallIntegerField(default=0)
     level = models.CharField(max_length=100, default=None)
 
-    def __str__(self):
-        return self.name
+    class Meta:
+        verbose_name: 'Student'
 
 
 class Academy(models.Model):
