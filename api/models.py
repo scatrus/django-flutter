@@ -1,15 +1,12 @@
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.contrib.auth.models import AbstractUser, User as BaseUser, PermissionsMixin
 from django.contrib.contenttypes.models import ContentType
-from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from django.utils.translation import ugettext_lazy as _
-
-from api.managers import CustomUserManager
 
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 
 from .managers import CustomUserManager
@@ -68,7 +65,7 @@ class Classroom(models.Model):
                                 verbose_name='Professor')
 
     def __str__(self):
-        return str(self.date)
+        return f'{str(self.date)} Prof. {self.teacher.first_name}'
 
 
 class Group(models.Model):
@@ -79,7 +76,9 @@ class Group(models.Model):
                                   verbose_name='Turma/Grupo/Alunos')
 
     def __str__(self):
-        return str(self.members.all().values_list('name'))
+        students = list(self.members.all())
+        if len(students) > 0:
+            return mark_safe('<br/>'.join(students.first_name for students in students))
 
 
 class Presence(models.Model):
@@ -95,7 +94,7 @@ class Presence(models.Model):
     presence = models.PositiveSmallIntegerField(choices=PRESENCE_CHOICES)
 
     def __str__(self):
-        return f'{self.student.name} - {self.get_presence_display()} - {self.group.classroom.date}'
+        return f'{self.student} - {self.get_presence_display()} - {self.group.classroom.date}'
 
 
 @receiver(post_save, sender=Presence)
