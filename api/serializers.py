@@ -3,7 +3,6 @@ from api.models import Teacher, Student, Academy, Place, Classroom, Group, Prese
 
 
 class TeacherSerializer(ModelSerializer):
-
     class Meta:
         model = Teacher
         depth = 2
@@ -11,7 +10,6 @@ class TeacherSerializer(ModelSerializer):
 
 
 class StudentSerializer(ModelSerializer):
-
     class Meta:
         model = Student
         depth = 2
@@ -19,7 +17,6 @@ class StudentSerializer(ModelSerializer):
 
 
 class AcademySerializer(ModelSerializer):
-
     class Meta:
         model = Academy
         depth = 2
@@ -27,7 +24,6 @@ class AcademySerializer(ModelSerializer):
 
 
 class PlaceSerializer(ModelSerializer):
-
     class Meta:
         model = Place
         depth = 2
@@ -35,7 +31,6 @@ class PlaceSerializer(ModelSerializer):
 
 
 class ClassroomSerializer(ModelSerializer):
-
     class Meta:
         model = Classroom
         depth = 2
@@ -43,7 +38,6 @@ class ClassroomSerializer(ModelSerializer):
 
 
 class GroupSerializer(ModelSerializer):
-
     class Meta:
         model = Group
         depth = 2
@@ -51,7 +45,6 @@ class GroupSerializer(ModelSerializer):
 
 
 class PresenceSerializer(ModelSerializer):
-
     class Meta:
         model = Presence
         depth = 2
