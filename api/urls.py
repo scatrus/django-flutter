@@ -2,8 +2,14 @@ from django.conf.urls import url
 from rest_framework.urlpatterns import format_suffix_patterns
 from api import views
 
+from django.urls import path
+from .views import UserRecordView, UserCreateApiView, UserList
+
+app_name = 'api'
 
 urlpatterns = [
+    # url(r'^user/$', UserList),
+    url('user/', UserCreateApiView.as_view(), name='users'),
 
     url(r'^teacher/(?P<pk>[0-9]+)/$', views.teacher_detail),
     url(r'^teacher/$', views.teacher_list),

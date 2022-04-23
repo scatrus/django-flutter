@@ -25,8 +25,16 @@ class CustomUser(AbstractUser):
         return self.email
 
 
+class Academy(models.Model):
+    name = models.CharField(max_length=255, default=None)
+
+    def __str__(self):
+        return self.name
+
+
 class Teacher(CustomUser):
     level = models.CharField(max_length=100)
+    academy = models.ForeignKey(Academy, on_delete=models.CASCADE, default=None)
 
     class Meta:
         verbose_name: 'Teacher'
@@ -35,16 +43,10 @@ class Teacher(CustomUser):
 class Student(CustomUser):
     presence_amount = models.PositiveSmallIntegerField(default=0)
     level = models.CharField(max_length=100, default=None)
+    academy = models.ForeignKey(Academy, on_delete=models.CASCADE, default=None)
 
     class Meta:
         verbose_name: 'Student'
-
-
-class Academy(models.Model):
-    name = models.CharField(max_length=255, default=None)
-
-    def __str__(self):
-        return self.name
 
 
 class Place(models.Model):
@@ -78,7 +80,7 @@ class Group(models.Model):
     def __str__(self):
         students = list(self.members.all())
         if len(students) > 0:
-            return mark_safe('<br/>'.join(students.first_name for students in students))
+            return mark_safe('<br/>'.join(students.email for students in students))
 
 
 class Presence(models.Model):

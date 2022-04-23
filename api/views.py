@@ -1,7 +1,12 @@
+from rest_framework import status, views, generics, permissions
 from rest_framework.decorators import api_view
+from rest_framework.permissions import IsAdminUser, AllowAny
 from rest_framework.response import Response
-from api.models import Teacher, Student, Academy, Place, Classroom, Group, Presence
-from api.serializers import TeacherSerializer, StudentSerializer, AcademySerializer, PlaceSerializer, ClassroomSerializer, GroupSerializer, PresenceSerializer
+from rest_framework.views import APIView
+
+from api.models import Teacher, Student, Academy, Place, Classroom, Group, Presence, CustomUser
+from api.serializers import TeacherSerializer, StudentSerializer, AcademySerializer, PlaceSerializer, \
+    ClassroomSerializer, GroupSerializer, PresenceSerializer, UserSerializer
 
 
 @api_view(['GET', 'POST'])
@@ -22,7 +27,7 @@ def teacher_list(request):
 @api_view(['GET', 'PUT', 'DELETE'])
 def teacher_detail(request, pk):
     try:
-        item = Teacher.objects.get(pk=pk)
+        item = get(pk=pk)
     except Teacher.DoesNotExist:
         return Response(status=404)
 
@@ -60,7 +65,7 @@ def student_list(request):
 @api_view(['GET', 'PUT', 'DELETE'])
 def student_detail(request, pk):
     try:
-        item = Student.objects.get(pk=pk)
+        item = get(pk=pk)
     except Student.DoesNotExist:
         return Response(status=404)
 
@@ -268,3 +273,87 @@ def presence_detail(request, pk):
     elif request.method == 'DELETE':
         item.delete()
         return Response(status=204)
+
+
+from rest_framework.generics import CreateAPIView
+
+
+class UserCreateApiView(CreateAPIView):
+    queryset = CustomUser.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = (AllowAny,)
+
+    def get(self, format=None):
+        users = CustomUser.objects.all()
+        serializer = UserSerializer(users, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        serializer = UserSerializer(data=request.data)
+        if serializer.is_valid(raise_exception=ValueError):
+            serializer.create(validated_data=request.data)
+            return Response(
+                serializer.data,
+                status=status.HTTP_201_CREATED
+            )
+        return Response(
+            {
+                "error": True,
+                "error_msg": serializer.error_messages,
+            },
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+
+class UserRecordView(generics.CreateAPIView):
+    """
+    API View to create or get a list of all the registered
+    users. GET request returns the registered users whereas
+    a POST request allows to create a new user.
+    """
+    permission_classes = [AllowAny]
+
+    def get(self, format=None):
+        users = CustomUser.objects.all()
+        serializer = UserSerializer(users, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        serializer = UserSerializer(data=request.data)
+        if serializer.is_valid(raise_exception=ValueError):
+            serializer.create(validated_data=request.data)
+            return Response(
+                serializer.data,
+                status=status.HTTP_201_CREATED
+            )
+        return Response(
+            {
+                "error": True,
+                "error_msg": serializer.error_messages,
+            },
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+
+def get(request, format=None):
+    users = CustomUser.objects.all()
+    serializer = UserSerializer(users, many=True)
+    return Response(serializer.data)
+
+
+class UserList(APIView):
+    """
+    Create a new user. It's called 'UserList' because normally we'd have a get
+    method here too, for retrieving a list of all User objects.
+    """
+    permission_classes = (permissions.AllowAny,)
+    http_method_names = ['get', 'head']
+
+    def post(self, request, format=None):
+        self.http_method_names.append("GET")
+
+        serializer = UserSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

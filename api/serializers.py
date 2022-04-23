@@ -1,5 +1,33 @@
+from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer
-from api.models import Teacher, Student, Academy, Place, Classroom, Group, Presence
+from rest_framework.validators import UniqueTogetherValidator
+
+from api.models import Teacher, Student, Academy, Place, Classroom, Group, Presence, CustomUser
+
+
+class UserSerializer(serializers.ModelSerializer):
+
+    def create(self, validated_data):
+        user = CustomUser.objects.create_user(**validated_data)
+        return user
+
+    class Meta:
+        model = CustomUser
+        fields = (
+            # 'username',
+            # 'first_name',
+            # 'last_name',
+            'email',
+            'password',
+        )
+        extra_kwargs = {'password': {'write_only': True}}
+        validators = [
+            UniqueTogetherValidator(
+                queryset=CustomUser.objects.all(),
+                fields=['email']
+
+            )
+        ]
 
 
 class TeacherSerializer(ModelSerializer):
