@@ -1,5 +1,5 @@
 from rest_framework import status, views, generics, permissions
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.permissions import IsAdminUser, AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -10,6 +10,8 @@ from api.serializers import TeacherSerializer, StudentSerializer, AcademySeriali
 
 
 @api_view(['GET', 'POST'])
+@authentication_classes([])
+@permission_classes([])
 def teacher_list(request):
     if request.method == 'GET':
         items = Teacher.objects.order_by('pk')
@@ -25,6 +27,8 @@ def teacher_list(request):
 
 
 @api_view(['GET', 'PUT', 'DELETE'])
+@authentication_classes([])
+@permission_classes([])
 def teacher_detail(request, pk):
     try:
         item = get(pk=pk)
@@ -48,6 +52,8 @@ def teacher_detail(request, pk):
 
 
 @api_view(['GET', 'POST'])
+@authentication_classes([])
+@permission_classes([])
 def student_list(request):
     if request.method == 'GET':
         items = Student.objects.order_by('pk')
@@ -63,9 +69,11 @@ def student_list(request):
 
 
 @api_view(['GET', 'PUT', 'DELETE'])
+@authentication_classes([])
+@permission_classes([])
 def student_detail(request, pk):
     try:
-        item = get(pk=pk)
+        item = get()
     except Student.DoesNotExist:
         return Response(status=404)
 
@@ -86,6 +94,8 @@ def student_detail(request, pk):
 
 
 @api_view(['GET', 'POST'])
+@authentication_classes([])
+@permission_classes([])
 def academy_list(request):
     if request.method == 'GET':
         items = Academy.objects.order_by('pk')
@@ -101,6 +111,8 @@ def academy_list(request):
 
 
 @api_view(['GET', 'PUT', 'DELETE'])
+@authentication_classes([])
+@permission_classes([])
 def academy_detail(request, pk):
     try:
         item = Academy.objects.get(pk=pk)
@@ -124,6 +136,8 @@ def academy_detail(request, pk):
 
 
 @api_view(['GET', 'POST'])
+@authentication_classes([])
+@permission_classes([])
 def place_list(request):
     if request.method == 'GET':
         items = Place.objects.order_by('pk')
@@ -139,6 +153,8 @@ def place_list(request):
 
 
 @api_view(['GET', 'PUT', 'DELETE'])
+@authentication_classes([])
+@permission_classes([])
 def place_detail(request, pk):
     try:
         item = Place.objects.get(pk=pk)
@@ -162,6 +178,8 @@ def place_detail(request, pk):
 
 
 @api_view(['GET', 'POST'])
+@authentication_classes([])
+@permission_classes([])
 def classroom_list(request):
     if request.method == 'GET':
         items = Classroom.objects.order_by('pk')
@@ -177,6 +195,8 @@ def classroom_list(request):
 
 
 @api_view(['GET', 'PUT', 'DELETE'])
+@authentication_classes([])
+@permission_classes([])
 def classroom_detail(request, pk):
     try:
         item = Classroom.objects.get(pk=pk)
@@ -200,6 +220,8 @@ def classroom_detail(request, pk):
 
 
 @api_view(['GET', 'POST'])
+@authentication_classes([])
+@permission_classes([])
 def group_list(request):
     if request.method == 'GET':
         items = Group.objects.order_by('pk')
@@ -215,6 +237,8 @@ def group_list(request):
 
 
 @api_view(['GET', 'PUT', 'DELETE'])
+@authentication_classes([])
+@permission_classes([])
 def group_detail(request, pk):
     try:
         item = Group.objects.get(pk=pk)
@@ -238,6 +262,8 @@ def group_detail(request, pk):
 
 
 @api_view(['GET', 'POST'])
+@authentication_classes([])
+@permission_classes([])
 def presence_list(request):
     if request.method == 'GET':
         items = Presence.objects.order_by('pk')
@@ -253,6 +279,8 @@ def presence_list(request):
 
 
 @api_view(['GET', 'PUT', 'DELETE'])
+@authentication_classes([])
+@permission_classes([])
 def presence_detail(request, pk):
     try:
         item = Presence.objects.get(pk=pk)

@@ -20,7 +20,7 @@ class UserSerializer(serializers.ModelSerializer):
             'email',
             'password',
         )
-        extra_kwargs = {'password': {'write_only': True}}
+        extra_kwargs = {'password': {'write_only': False}}
         validators = [
             UniqueTogetherValidator(
                 queryset=CustomUser.objects.all(),
